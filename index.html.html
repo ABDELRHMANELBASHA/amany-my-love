@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="dark h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ليه أنتي بالذات؟ ❤️</title>
+    
+    <!-- Google Fonts: Cairo & Tajawal -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        * {
+            font-family: 'Tajawal', 'Cairo', sans-serif;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: #0b0914;
+            color: #ffe4e6;
+            overflow-x: hidden;
+        }
+
+        /* 3D Flip Card Mechanics */
+        .perspective-1000 {
+            perspective: 1000px;
+        }
+
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transform-style: preserve-3d;
+        }
+
+        .card-inner.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-front, .card-back {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 1.5rem;
+        }
+
+        .card-back {
+            transform: rotateY(180deg);
+        }
+
+        /* Ambient Pulsing Glow Backgrounds */
+        @keyframes pulseGlow {
+            0%, 100% { transform: scale(1) translate(0, 0); opacity: 0.35; }
+            50% { transform: scale(1.25) translate(15px, -15px); opacity: 0.65; }
+        }
+
+        .animate-orb-rose {
+            animation: pulseGlow 10s ease-in-out infinite;
+        }
+
+        .animate-orb-purple {
+            animation: pulseGlow 12s ease-in-out infinite 3s;
+        }
+
+        /* Custom Shimmering Text Animation */
+        @keyframes shimmerText {
+            0% { background-position: -200% center; }
+            100% { background-position: 200% center; }
+        }
+
+        .shimmer-title {
+            background: linear-gradient(90deg, #f43f5e 0%, #fb7185 25%, #fef08a 50%, #fb7185 75%, #f43f5e 100%);
+            background-size: 200% auto;
+            color: transparent;
+            -webkit-background-clip: text;
+            animation: shimmerText 5s linear infinite;
+        }
+
+        /* Click Ripple Effect Canvas */
+        .click-heart {
+            position: absolute;
+            pointer-events: none;
+            animation: floatUpFade 1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+            font-size: 1.5rem;
+            z-index: 100;
+        }
+
+        @keyframes floatUpFade {
+            0% { opacity: 1; transform: translate(-50%, -50%) scale(0.6) rotate(0deg); }
+            100% { opacity: 0; transform: translate(-50%, -120px) scale(1.4) rotate(15deg); }
+        }
+
+        /* Custom Glassmorphism Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0b0914;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(to bottom, #f43f5e, #fb7185);
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between relative selection:bg-rose-500 selection:text-white">
+
+    <!-- Background Floating Hearts Canvas -->
+    <canvas id="bgHeartsCanvas" class="fixed inset-0 pointer-events-none z-0"></canvas>
+    
+    <!-- Celebration Confetti Overlay Canvas -->
+    <canvas id="confettiCanvas" class="fixed inset-0 pointer-events-none z-50"></canvas>
+
+    <!-- Glowing Background Glass Orbs -->
+    <div class="fixed top-12 right-10 w-72 h-72 sm:w-96 sm:h-96 bg-gradient-to-br from-rose-600/30 to-pink-500/20 rounded-full blur-3xl pointer-events-none animate-orb-rose z-0"></div>
+    <div class="fixed bottom-12 left-10 w-72 h-72 sm:w-96 sm:h-96 bg-gradient-to-tr from-purple-800/30 to-rose-900/20 rounded-full blur-3xl pointer-events-none animate-orb-purple z-0"></div>
+
+    <!-- Main Container -->
+    <div class="relative z-10 flex-grow flex flex-col max-w-5xl mx-auto w-full px-4 sm:px-6 py-6 md:py-10">
+
+        <!-- App Header Section -->
+        <header class="text-center mb-8 space-y-4">
+            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-rose-500/10 border border-pink-500/20 backdrop-blur-md text-pink-300 text-xs sm:text-sm font-semibold shadow-inner">
+                <span>✨</span>
+                <span>رسالة خاصة جداً لقلبكِ العظيم</span>
+                <span>✨</span>
+            </div>
+
+            <h1 class="text-3xl sm:text-5xl font-black tracking-tight shimmer-title leading-tight drop-shadow-xl px-2">
+                ليه أنتي بالذات؟ ❤️
+            </h1>
+
+            <p class="text-sm sm:text-base text-rose-200/80 max-w-2xl mx-auto leading-relaxed px-2 font-medium">
+                كل كارت هنا فيه حقيقة واعتذار طالعين من أعمق نقطة في قلبي.. اضغطي على الكروت واكشفي الأسرار 💌
+            </p>
+
+            <!-- Interactive Progress Bar Component -->
+            <div class="max-w-md mx-auto pt-2">
+                <div class="bg-slate-900/80 border border-pink-500/25 rounded-2xl p-3.5 backdrop-blur-md shadow-lg">
+                    <div class="flex justify-between items-center mb-2 text-xs font-bold">
+                        <span class="text-rose-200 flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-rose-500 animate-ping"></span>
+                            تقدم الكشف:
+                        </span>
+                        <span id="progressText" class="text-pink-300 font-extrabold">كشفتِ 0 من 6 أسرار</span>
+                    </div>
+                    <div class="w-full bg-slate-950 rounded-full h-3 p-0.5 border border-pink-500/20 shadow-inner">
+                        <div id="progressBar" class="bg-gradient-to-l from-pink-500 via-rose-500 to-amber-400 h-full rounded-full transition-all duration-500 shadow-[0_0_10px_rgba(244,63,94,0.6)]" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- 3D Flip Cards Grid (6 Cards) -->
+        <main class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 mb-16">
+
+            <!-- Card 1 -->
+            <div class="card-item perspective-1000 h-72 cursor-pointer" data-card-id="1">
+                <div class="card-inner">
+                    <!-- Front -->
+                    <div class="card-front bg-slate-900/60 border border-pink-500/30 backdrop-blur-md p-6 flex flex-col justify-between text-center shadow-xl hover:border-pink-400/60 hover:shadow-[0_0_25px_rgba(244,63,94,0.2)] transition-all">
+                        <div class="flex justify-between items-center text-xs font-bold text-pink-400/80">
+                            <span>سر #1</span>
+                            <span>🥺</span>
+                        </div>
+                        <div class="my-auto space-y-3">
+                            <div class="w-14 h-14 mx-auto rounded-2xl bg-rose-500/10 border border-pink-500/20 flex items-center justify-center text-2xl shadow-inner">
+                                🌙
+                            </div>
+                            <h3 class="text-lg font-bold text-rose-100 leading-snug">
+                                ليه مش بقدر على زعلِك؟ 🥺
+                            </h3>
+                        </div>
+                        <div class="text-xs text-pink-300/80 font-semibold flex items-center justify-center gap-1">
+                            <span>إكشفي السر</span>
+                            <span>✨</span>
+                        </div>
+                    </div>
+                    <!-- Back -->
+                    <div class="card-back bg-gradient-to-br from-rose-950/95 via-purple-950/95 to-slate-950/95 border-2 border-pink-400/60 backdrop-blur-xl p-6 flex flex-col justify-between text-center shadow-2xl">
+                        <div class="text-left text-xs font-bold text-pink-300/70">#01</div>
+                        <p class="text-sm sm:text-base font-bold text-rose-50 leading-relaxed my-auto">
+                            عشان ضحكتِك وراحتك هما أهم حاجة عندي في الدنيا، وزعلك بيوقف حياتي وبيخلي كل حاجة مالهاش طعم ولا قيمة.
+                        </p>
+                        <div class="text-xs text-amber-300 font-semibold">❤️ راحتك هي أهم أولوياتي</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="card-item perspective-1000 h-72 cursor-pointer" data-card-id="2">
+                <div class="card-inner">
+                    <!-- Front -->
+                    <div class="card-front bg-slate-900/60 border border-pink-500/30 backdrop-blur-md p-6 flex flex-col justify-between text-center shadow-xl hover:border-pink-400/60 hover:shadow-[0_0_25px_rgba(244,63,94,0.2)] transition-all">
+                        <div class="flex justify-between items-center text-xs font-bold text-pink-400/80">
+                            <span>سر #2</span>
+                            <span>✨</span>
+                        </div>
+                        <div class="my-auto space-y-3">
+                            <div class="w-14 h-14 mx-auto rounded-2xl bg-rose-500/10 border border-pink-500/20 flex items-center justify-center text-2xl shadow-inner">
+                                💖
+                            </div>
+                            <h3 class="text-lg font-bold text-rose-100 leading-snug">
+                                إيه أكتر حاجة بحبها فيكي؟ ✨
+                            </h3>
+                        </div>
+                        <div class="text-xs text-pink-300/80 font-semibold flex items-center justify-center gap-1">
+                            <span>إكشفي السر</span>
+                            <span>✨</span>
+                        </div>
+                    </div>
+                    <!-- Back -->
+                    <div class="card-back bg-gradient-to-br from-rose-950/95 via-purple-950/95 to-slate-950/95 border-2 border-pink-400/60 backdrop-blur-xl p-6 flex flex-col justify-between text-center shadow-2xl">
+                        <div class="text-left text-xs font-bold text-pink-300/70">#02</div>
+                        <p class="text-sm sm:text-base font-bold text-rose-50 leading-relaxed my-auto">
+                            قلبك الطيب ورقتك اللي بتستوعبني دايماً، وتفاصيلك الصغيرة الجميلة اللي محدش يعرفها ولا يحسها غيري.
+                        </p>
+                        <div class="text-xs text-amber-300 font-semibold">❤️ أنتي تفاصيلي المفضلة</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="card-item perspective-1000 h-72 cursor-pointer" data-card-id="3">
+                <div class="card-inner">
+                    <!-- Front -->
+                    <div class="card-front bg-slate-900/60 border border-pink-500/30 backdrop-blur-md p-6 flex flex-col justify-between text-center shadow-xl hover:border-pink-400/60 hover:shadow-[0_0_25px_rgba(244,63,94,0.2)] transition-all">
+                        <div class="flex justify-between items-center text-xs font-bold text-pink-400/80">
+                            <span>سر #3</span>
+                            <span>👑</span>
+                        </div>
+                        <div class="my-auto space-y-3">
+                            <div class="w-14 h-14 mx-auto rounded-2xl bg-rose-500/10 border border-pink-500/20 flex items-center justify-center text-2xl shadow-inner">
+                                👑
+                            </div>
+                            <h3 class="text-lg font-bold text-rose-100 leading-snug">
+                                مكانتك عندي إيه؟ 👑
+                            </h3>
+                        </div>
+                        <div class="text-xs text-pink-300/80 font-semibold flex items-center justify-center gap-1">
+                            <span>إكشفي السر</span>
+                            <span>✨</span>
+                        </div>
+                    </div>
+                    <!-- Back -->
+                    <div class="card-back bg-gradient-to-br from-rose-950/95 via-purple-950/95 to-slate-950/95 border-2 border-pink-400/60 backdrop-blur-xl p-6 flex flex-col justify-between text-center shadow-2xl">
+                        <div class="text-left text-xs font-bold text-pink-300/70">#03</div>
+                        <p class="text-sm sm:text-base font-bold text-rose-50 leading-relaxed my-auto">
+                            أنتي مش بس حبيبتي، أنتي ناسي وشريكتي وسندي وفرحتي، والحد الوحيد اللي بطمن وأنا جمبه.
+                        </p>
+                        <div class="text-xs text-amber-300 font-semibold">❤️ أميرتي ووطني الدافئ</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 4 -->
+            <div class="card-item perspective-1000 h-72 cursor-pointer" data-card-id="4">
+                <div class="card-inner">
+                    <!-- Front -->
+                    <div class="card-front bg-slate-900/60 border border-pink-500/30 backdrop-blur-md p-6 flex flex-col justify-between text-center shadow-xl hover:border-pink-400/60 hover:shadow-[0_0_25px_rgba(244,63,94,0.2)] transition-all">
+                        <div class="flex justify-between items-center text-xs font-bold text-pink-400/80">
+                            <span>سر #4</span>
+                            <span>🤝</span>
+                        </div>
+                        <div class="my-auto space-y-3">
+                            <div class="w-14 h-14 mx-auto rounded-2xl bg-rose-500/10 border border-pink-500/20 flex items-center justify-center text-2xl shadow-inner">
+                                🤝
+                            </div>
+                            <h3 class="text-lg font-bold text-rose-100 leading-snug">
+                                وعدي ليكي إيه؟ 🤝
+                            </h3>
+                        </div>
+                        <div class="text-xs text-pink-300/80 font-semibold flex items-center justify-center gap-1">
+                            <span>إكشفي السر</span>
+                            <span>✨</span>
+                        </div>
+                    </div>
+                    <!-- Back -->
+                    <div class="card-back bg-gradient-to-br from-rose-950/95 via-purple-950/95 to-slate-950/95 border-2 border-pink-400/60 backdrop-blur-xl p-6 flex flex-col justify-between text-center shadow-2xl">
+                        <div class="text-left text-xs font-bold text-pink-300/70">#04</div>
+                        <p class="text-sm sm:text-base font-bold text-rose-50 leading-relaxed my-auto">
+                            أني أتعلم من أي غلطة، وما أكررش أي موقف يزعل قلبك الجميل ده أبداً، وأفضل دايماً أمانِك وحمايتك.
+                        </p>
+                        <div class="text-xs text-amber-300 font-semibold">❤️ وعد رجال صادق لقلبك</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 5 -->
+            <div class="card-item perspective-1000 h-72 cursor-pointer" data-card-id="5">
+                <div class="card-inner">
+                    <!-- Front -->
+                    <div class="card-front bg-slate-900/60 border border-pink-500/30 backdrop-blur-md p-6 flex flex-col justify-between text-center shadow-xl hover:border-pink-400/60 hover:shadow-[0_0_25px_rgba(244,63,94,0.2)] transition-all">
+                        <div class="flex justify-between items-center text-xs font-bold text-pink-400/80">
+                            <span>سر #5</span>
+                            <span>💎</span>
+                        </div>
+                        <div class="my-auto space-y-3">
+                            <div class="w-14 h-14 mx-auto rounded-2xl bg-rose-500/10 border border-pink-500/20 flex items-center justify-center text-2xl shadow-inner">
+                                💎
+                            </div>
+                            <h3 class="text-lg font-bold text-rose-100 leading-snug">
+                                ليه أنتي بالذات؟ 💎
+                            </h3>
+                        </div>
+                        <div class="text-xs text-pink-300/80 font-semibold flex items-center justify-center gap-1">
+                            <span>إكشفي السر</span>
+                            <span>✨</span>
+                        </div>
+                    </div>
+                    <!-- Back -->
+                    <div class="card-back bg-gradient-to-br from-rose-950/95 via-purple-950/95 to-slate-950/95 border-2 border-pink-400/60 backdrop-blur-xl p-6 flex flex-col justify-between text-center shadow-2xl">
+                        <div class="text-left text-xs font-bold text-pink-300/70">#05</div>
+                        <p class="text-sm sm:text-base font-bold text-rose-50 leading-relaxed my-auto">
+                            عشان محدش في العالم كله يقدر يعوض مكانك، ولا يملأ عينيا وقلبي غيرك أنتِ وبس.. أنتي الاستثناء من كل شيء.
+                        </p>
+                        <div class="text-xs text-amber-300 font-semibold">❤️ أنتي الوحيدة والاستثناء</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 6 -->
+            <div class="card-item perspective-1000 h-72 cursor-pointer" data-card-id="6">
+                <div class="card-inner">
+                    <!-- Front -->
+                    <div class="card-front bg-slate-900/60 border border-pink-500/30 backdrop-blur-md p-6 flex flex-col justify-between text-center shadow-xl hover:border-pink-400/60 hover:shadow-[0_0_25px_rgba(244,63,94,0.2)] transition-all">
+                        <div class="flex justify-between items-center text-xs font-bold text-pink-400/80">
+                            <span>سر #6</span>
+                            <span>💌</span>
+                        </div>
+                        <div class="my-auto space-y-3">
+                            <div class="w-14 h-14 mx-auto rounded-2xl bg-rose-500/10 border border-pink-500/20 flex items-center justify-center text-2xl shadow-inner">
+                                💌
+                            </div>
+                            <h3 class="text-lg font-bold text-rose-100 leading-snug">
+                                رسالتي الأخيرة ليكي... 💌
+                            </h3>
+                        </div>
+                        <div class="text-xs text-pink-300/80 font-semibold flex items-center justify-center gap-1">
+                            <span>إكشفي السر</span>
+                            <span>✨</span>
+                        </div>
+                    </div>
+                    <!-- Back -->
+                    <div class="card-back bg-gradient-to-br from-rose-950/95 via-purple-950/95 to-slate-950/95 border-2 border-pink-400/60 backdrop-blur-xl p-6 flex flex-col justify-between text-center shadow-2xl">
+                        <div class="text-left text-xs font-bold text-pink-300/70">#06</div>
+                        <p class="text-sm sm:text-base font-bold text-rose-50 leading-relaxed my-auto">
+                            آسف من كل قلبي.. وبحبك أكتر مما تتخيلي. جاهزة نفتح صفحة جديدة مليانة حب وضحك وذكريات حلوة؟
+                        </p>
+                        <div class="text-xs text-amber-300 font-semibold">❤️ بحبك من كل قلبي</div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- Reconciliation Treaty Section -->
+        <section id="reconciliationSection" class="mb-12 scroll-mt-8">
+            <div class="bg-gradient-to-b from-rose-950/80 via-slate-900/90 to-purple-950/80 border-2 border-pink-500/40 rounded-3xl p-6 sm:p-10 backdrop-blur-xl text-center shadow-2xl shadow-rose-950/80 relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-pink-500/10 rounded-full blur-2xl pointer-events-none"></div>
+                
+                <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-rose-500/20 border border-pink-400/40 flex items-center justify-center text-3xl shadow-inner">
+                    📜
+                </div>
+
+                <h2 class="text-2xl sm:text-3xl font-black text-amber-200 mb-3">
+                    وثيقة الاعتذار والعهد الأبدي 👑
+                </h2>
+
+                <p class="text-sm sm:text-base text-rose-200/90 max-w-xl mx-auto mb-8 leading-relaxed font-medium">
+                    مكانتك في قلبي ملهاش بديل.. وكل الأسرار دي نقطة في بحر بحبك ليكي. جاهزة تسامحيني ونبدأ صفحة جديدة؟
+                </p>
+
+                <!-- Reconciliation Buttons -->
+                <div class="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
+                    <button id="forgiveBtn" class="flex-1 py-4 px-6 rounded-2xl bg-gradient-to-r from-rose-600 via-pink-600 to-amber-500 hover:from-rose-500 hover:to-amber-400 text-white font-extrabold text-base shadow-lg shadow-rose-600/30 hover:scale-105 active:scale-95 transition-all border border-pink-300/30">
+                        سامحتك خلاص ❤️
+                    </button>
+
+                    <button id="conditionBtn" class="flex-1 py-4 px-6 rounded-2xl bg-slate-950/80 border border-pink-500/40 hover:bg-rose-950/50 text-amber-200 font-extrabold text-base shadow-md hover:scale-105 active:scale-95 transition-all">
+                        سامحتك بس عندي شرط 📝
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="text-center text-xs text-pink-300/50 py-4 border-t border-pink-500/10 flex flex-col items-center gap-2">
+            <div>مصممة بكل الحب والدفء لأغلى إنسانة في وجودي 💕</div>
+            <button id="resetCardsBtn" class="text-pink-400/70 hover:text-pink-300 text-xs underline transition-colors">
+                إعادة إغلاق الكروت 🔄
+            </button>
+        </footer>
+
+    </div>
+
+    <!-- Interactive Condition Modal -->
+    <div id="conditionModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md opacity-0 pointer-events-none transition-all duration-300">
+        <div class="bg-gradient-to-b from-rose-950 via-slate-950 to-purple-950 border-2 border-pink-400/50 rounded-3xl max-w-md w-full p-6 text-center shadow-2xl relative">
+            <div class="text-3xl mb-2">🎁</div>
+            <h3 class="text-xl font-bold text-amber-200 mb-2">اكتبي شرطك ودلعك عليا!</h3>
+            <p class="text-xs text-rose-300/80 mb-4">اطلبي خروجة، أكلة بتحبيها، أو أي حاجة نفسك فيها والتنفيذ فوري 💕</p>
+            
+            <textarea id="conditionInput" rows="3" class="w-full p-3 rounded-xl bg-slate-900/90 border border-pink-500/30 text-rose-100 placeholder-rose-300/40 text-sm focus:outline-none focus:border-pink-400 transition-all mb-4 resize-none" placeholder="اكتبي شرطك هنا بكل دلع..."></textarea>
+            
+            <div class="flex gap-2">
+                <button id="submitConditionBtn" class="flex-1 py-3 bg-gradient-to-r from-rose-600 to-amber-500 rounded-xl font-bold text-white text-sm shadow-md hover:brightness-110 active:scale-95 transition-all">
+                    إرسال الشروط والمواكبة 🫡
+                </button>
+                <button id="cancelConditionBtn" class="px-4 py-3 bg-slate-900 border border-pink-500/20 rounded-xl text-rose-300 text-sm font-semibold hover:bg-slate-800 transition-all">
+                    إلغاء
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Box -->
+    <div id="toast" class="fixed bottom-6 right-6 left-6 sm:left-auto sm:max-w-md z-50 bg-gradient-to-r from-rose-900 via-pink-900 to-slate-950 border border-amber-400/50 p-4 rounded-2xl shadow-2xl text-amber-100 text-sm font-bold flex items-center gap-3 transform translate-y-24 opacity-0 transition-all duration-500 pointer-events-none">
+        <span id="toastIcon" class="text-2xl">✨</span>
+        <span id="toastMsg">رسالة التنبيه المخصصة</span>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            /* 1. Background Floating Hearts Canvas Particle Engine */
+            const bgCanvas = document.getElementById('bgHeartsCanvas');
+            const bgCtx = bgCanvas.getContext('2d');
+            let bgParticles = [];
+
+            function resizeBgCanvas() {
+                bgCanvas.width = window.innerWidth;
+                bgCanvas.height = window.innerHeight;
+            }
+            window.addEventListener('resize', resizeBgCanvas);
+            resizeBgCanvas();
+
+            class FloatingHeart {
+                constructor() {
+                    this.reset();
+                }
+                reset() {
+                    this.x = Math.random() * bgCanvas.width;
+                    this.y = bgCanvas.height + Math.random() * 50;
+                    this.size = Math.random() * 12 + 6;
+                    this.speedY = Math.random() * 1.0 + 0.3;
+                    this.speedX = (Math.random() - 0.5) * 0.5;
+                    this.rotation = Math.random() * Math.PI * 2;
+                    this.opacity = Math.random() * 0.4 + 0.2;
+                    this.color = `hsla(${Math.random() * 20 + 340}, 85%, 65%, ${this.opacity})`;
+                }
+                update() {
+                    this.y -= this.speedY;
+                    this.x += this.speedX;
+                    if (this.y < -30) this.reset();
+                }
+                draw() {
+                    bgCtx.save();
+                    bgCtx.translate(this.x, this.y);
+                    bgCtx.rotate(this.rotation);
+                    bgCtx.fillStyle = this.color;
+                    bgCtx.beginPath();
+                    const h = this.size * 0.3;
+                    bgCtx.moveTo(0, h);
+                    bgCtx.bezierCurveTo(0, 0, -this.size / 2, 0, -this.size / 2, h);
+                    bgCtx.bezierCurveTo(-this.size / 2, (this.size + h) / 2, 0, this.size, 0, this.size);
+                    bgCtx.bezierCurveTo(0, this.size, this.size / 2, (this.size + h) / 2, this.size / 2, h);
+                    bgCtx.bezierCurveTo(this.size / 2, 0, 0, 0, 0, h);
+                    bgCtx.closePath();
+                    bgCtx.fill();
+                    bgCtx.restore();
+                }
+            }
+
+            for (let i = 0; i < 35; i++) bgParticles.push(new FloatingHeart());
+
+            function animateBg() {
+                bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
+                bgParticles.forEach(p => { p.update(); p.draw(); });
+                requestAnimationFrame(animateBg);
+            }
+            animateBg();
+
+
+            /* 2. Self-contained Pure HTML5 Canvas Confetti Engine */
+            const confettiCanvas = document.getElementById('confettiCanvas');
+            const confCtx = confettiCanvas.getContext('2d');
+            let confettiParticles = [];
+
+            function resizeConfettiCanvas() {
+                confettiCanvas.width = window.innerWidth;
+                confettiCanvas.height = window.innerHeight;
+            }
+            window.addEventListener('resize', resizeConfettiCanvas);
+            resizeConfettiCanvas();
+
+            class ConfettiParticle {
+                constructor(x, y) {
+                    this.x = x;
+                    this.y = y;
+                    this.size = Math.random() * 8 + 4;
+                    this.speedX = (Math.random() - 0.5) * 14;
+                    this.speedY = Math.random() * -12 - 4;
+                    this.gravity = 0.3;
+                    this.rotation = Math.random() * 360;
+                    this.rotSpeed = (Math.random() - 0.5) * 10;
+                    this.color = ['#f43f5e', '#fb7185', '#fef08a', '#e0a96d', '#a855f7'][Math.floor(Math.random() * 5)];
+                    this.opacity = 1;
+                }
+                update() {
+                    this.speedY += this.gravity;
+                    this.x += this.speedX;
+                    this.y += this.speedY;
+                    this.rotation += this.rotSpeed;
+                    this.opacity -= 0.008;
+                }
+                draw() {
+                    if (this.opacity <= 0) return;
+                    confCtx.save();
+                    confCtx.translate(this.x, this.y);
+                    confCtx.rotate((this.rotation * Math.PI) / 180);
+                    confCtx.globalAlpha = Math.max(0, this.opacity);
+                    confCtx.fillStyle = this.color;
+                    confCtx.fillRect(-this.size / 2, -this.size / 2, this.size, this.size);
+                    confCtx.restore();
+                }
+            }
+
+            function triggerConfetti() {
+                const centerX = window.innerWidth / 2;
+                const centerY = window.innerHeight / 3;
+                for (let i = 0; i < 140; i++) {
+                    confettiParticles.push(new ConfettiParticle(centerX, centerY));
+                }
+            }
+
+            function animateConfetti() {
+                confCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+                confettiParticles = confettiParticles.filter(p => p.opacity > 0);
+                confettiParticles.forEach(p => { p.update(); p.draw(); });
+                requestAnimationFrame(animateConfetti);
+            }
+            animateConfetti();
+
+
+            /* 3. Interactive Heart Burst Effect on Click */
+            const emojis = ['💖', '✨', '🌸', '❤️', '💕', '👑'];
+            window.addEventListener('click', (e) => {
+                if (e.target.closest('button, textarea, input')) return;
+                
+                const heart = document.createElement('div');
+                heart.className = 'click-heart';
+                heart.style.left = `${e.clientX}px`;
+                heart.style.top = `${e.clientY}px`;
+                heart.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                document.body.appendChild(heart);
+
+                setTimeout(() => heart.remove(), 1000);
+            });
+
+
+            /* 4. Pure Synthesized Audio Chime (Web Audio API) */
+            let audioCtx = null;
+            function initAudio() {
+                if (!audioCtx) {
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    audioCtx = new AudioContext();
+                }
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+            }
+
+            function playChimeSound() {
+                if (!audioCtx) return;
+                try {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(350, audioCtx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(700, audioCtx.currentTime + 0.18);
+                    gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.18);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.18);
+                } catch(e) {}
+            }
+
+            function playFanfareSound() {
+                if (!audioCtx) return;
+                const freqs = [523.25, 659.25, 783.99, 1046.50];
+                freqs.forEach((f, i) => {
+                    setTimeout(() => {
+                        try {
+                            const osc = audioCtx.createOscillator();
+                            const gain = audioCtx.createGain();
+                            osc.type = 'triangle';
+                            osc.frequency.setValueAtTime(f, audioCtx.currentTime);
+                            gain.gain.setValueAtTime(0.18, audioCtx.currentTime);
+                            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.5);
+                            osc.connect(gain);
+                            gain.connect(audioCtx.destination);
+                            osc.start();
+                            osc.stop(audioCtx.currentTime + 0.5);
+                        } catch(e){}
+                    }, i * 90);
+                });
+            }
+
+
+            /* 5. Card Flip & Progress Bar Logic */
+            const cards = document.querySelectorAll('.card-item');
+            const totalCards = 6;
+            const flippedSet = new Set();
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+            const resetCardsBtn = document.getElementById('resetCardsBtn');
+
+            cards.forEach(card => {
+                card.addEventListener('click', () => {
+                    initAudio();
+                    const inner = card.querySelector('.card-inner');
+                    const cardId = card.getAttribute('data-card-id');
+
+                    inner.classList.toggle('flipped');
+                    playChimeSound();
+
+                    if (inner.classList.contains('flipped')) {
+                        flippedSet.add(cardId);
+                    } else {
+                        flippedSet.delete(cardId);
+                    }
+
+                    const count = flippedSet.size;
+                    const percent = (count / totalCards) * 100;
+                    progressBar.style.width = `${percent}%`;
+                    progressText.textContent = `كشفتِ ${count} من ${totalCards} أسرار`;
+
+                    // Automatic Trigger when all 6 cards are revealed
+                    if (count === totalCards) {
+                        setTimeout(() => {
+                            triggerConfetti();
+                            playFanfareSound();
+                            document.getElementById('reconciliationSection').scrollIntoView({ behavior: 'smooth' });
+                        }, 600);
+                    }
+                });
+            });
+
+            resetCardsBtn.addEventListener('click', () => {
+                initAudio();
+                cards.forEach(card => {
+                    card.querySelector('.card-inner').classList.remove('flipped');
+                });
+                flippedSet.clear();
+                progressBar.style.width = '0%';
+                progressText.textContent = `كشفتِ 0 من ${totalCards} أسرار`;
+                showToast('تم إعادة إغلاق الكروت لتجربتها من جديد ✨', '🔄');
+            });
+
+
+            /* 6. Modals & Actions Logic */
+            const forgiveBtn = document.getElementById('forgiveBtn');
+            const conditionBtn = document.getElementById('conditionBtn');
+            const conditionModal = document.getElementById('conditionModal');
+            const conditionInput = document.getElementById('conditionInput');
+            const submitConditionBtn = document.getElementById('submitConditionBtn');
+            const cancelConditionBtn = document.getElementById('cancelConditionBtn');
+
+            function showToast(msg, icon = '✨') {
+                const toast = document.getElementById('toast');
+                document.getElementById('toastMsg').textContent = msg;
+                document.getElementById('toastIcon').textContent = icon;
+                toast.classList.remove('translate-y-24', 'opacity-0');
+                setTimeout(() => {
+                    toast.classList.add('translate-y-24', 'opacity-0');
+                }, 4000);
+            }
+
+            forgiveBtn.addEventListener('click', () => {
+                initAudio();
+                triggerConfetti();
+                playFanfareSound();
+                showToast('ربنا يخليكي ليا وما يحرمناش من بعض أبداً يا أجمل حاجة في حياتي ❤️', '👑');
+            });
+
+            conditionBtn.addEventListener('click', () => {
+                initAudio();
+                conditionModal.classList.remove('opacity-0', 'pointer-events-none');
+            });
+
+            cancelConditionBtn.addEventListener('click', () => {
+                conditionModal.classList.add('opacity-0', 'pointer-events-none');
+            });
+
+            submitConditionBtn.addEventListener('click', () => {
+                initAudio();
+                const text = conditionInput.value.trim();
+                conditionModal.classList.add('opacity-0', 'pointer-events-none');
+                triggerConfetti();
+                playFanfareSound();
+
+                if (text) {
+                    showToast(`شرطك مجاب فوراً وبدلع: "${text}" 🫡💕`, '🎁');
+                } else {
+                    showToast('كل شروطك مجابة ومستعد للتنفيذ فوراً! 💕', '✨');
+                }
+                conditionInput.value = '';
+            });
+
+        });
+    </script>
+</body>
+</html>
